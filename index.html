@@ -1,328 +1,124 @@
 <!DOCTYPE html>
-<!-- 
-This HTML document includes profile editing functionality:
-- Click Edit Profile button to toggle edit mode
-- Edit name, location, and profile picture
-- Changes saved to localStorage
-- Future: Add server-side persistence
--->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YoFace - Share Your Moments</title>
+    <title>YoFaces - Share Your World</title>
     <style>
         :root {
-            --primary: #FF4B4B;
-            --secondary: #F8F9FA;
-            --text: #333333;
-            --border: #E0E0E0;
-        }
-        
-        body {
-            margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            color: var(--text);
-            line-height: 1.6;
-            background-color: #f0f2f5;
+            --primary-color: #FF8C42;
+            --secondary-color: #FF5733;
+            --bg-color: #FFF1E6;
         }
 
-        .header {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+        }
+
+        .navbar {
             background-color: white;
             padding: 1rem;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             position: fixed;
             width: 100%;
             top: 0;
-            z-index: 1000;
-        }
-
-        .nav {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            z-index: 100;
         }
 
         .logo {
-            font-size: 1.5rem;
+            color: var(--primary-color);
+            font-size: 2rem;
             font-weight: bold;
-            color: var(--primary);
-            text-decoration: none;
         }
 
-        .nav-links {
-            display: flex;
-            gap: 1rem;
+        .feed {
+            margin-top: 80px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        .nav-links a {
-            color: var(--text);
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            transition: background-color 0.3s;
-        }
-
-        .nav-links a:hover {
-            background-color: var(--secondary);
-        }
-
-        .main-content {
-            max-width: 1200px;
-            margin: 80px auto 2rem;
-            padding: 0 1rem;
-            display: grid;
-            grid-template-columns: 1fr 2fr 1fr;
-            gap: 2rem;
-        }
-
-        .profile-card {
+        .post {
             background: white;
             border-radius: 10px;
-            padding: 1.5rem;
+            margin-bottom: 20px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 100px;
         }
 
-        .profile-header {
-            text-align: center;
-            margin-bottom: 1.5rem;
+        .post-header {
+            padding: 1rem;
+            display: flex;
+            align-items: center;
         }
 
-        .profile-pic {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 1rem;
-            cursor: pointer;
-        }
-
-        .profile-pic:hover {
-            opacity: 0.8;
-        }
-
-        .profile-name {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-
-        .profile-name[contenteditable="true"],
-        .profile-location[contenteditable="true"] {
-            border: 1px dashed var(--primary);
-            padding: 0.2rem;
-            border-radius: 4px;
-        }
-
-        .profile-location {
-            color: #666;
-            margin-bottom: 1rem;
-        }
-
-        .profile-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .stat-item {
-            padding: 0.5rem;
-            background: var(--secondary);
-            border-radius: 8px;
-        }
-
-        .stat-number {
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .edit-profile-btn, .save-profile-btn {
+        .post-image {
             width: 100%;
-            padding: 0.8rem;
-            background: var(--primary);
+            height: auto;
+        }
+
+        .post-actions {
+            padding: 1rem;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
             cursor: pointer;
-            transition: opacity 0.3s;
         }
 
-        .save-profile-btn {
-            display: none;
-            background: #28a745;
+        .hashtag {
+            color: var(--secondary-color);
+            text-decoration: none;
         }
-
-        .edit-profile-btn:hover, .save-profile-btn:hover {
-            opacity: 0.9;
-        }
-
-        /* Rest of the styles remain unchanged */
-        
     </style>
 </head>
 <body>
-    <header class="header">
-        <nav class="nav">
-            <a href="#" class="logo">YoFace</a>
-            <div class="nav-links">
-                <a href="#home">Home</a>
-                <a href="#profile">Profile</a>
-                <a href="#messages">Messages</a>
-                <a href="#notifications">Notifications</a>
-            </div>
-        </nav>
-    </header>
+    <nav class="navbar">
+        <div class="logo">YoFaces</div>
+    </nav>
 
-    <main class="main-content">
-        <aside class="profile-card">
-            <div class="profile-header">
-                <img src="https://picsum.photos/150" alt="Profile Picture" class="profile-pic" title="Click to change profile picture">
-                <h2 class="profile-name" contenteditable="false">John Doe</h2>
-                <p class="profile-location" contenteditable="false">New York, USA</p>
+    <div class="feed">
+        <!-- Example post structure -->
+        <div class="post">
+            <div class="post-header">
+                <img src="avatar.jpg" alt="User avatar" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+                <span>Username</span>
             </div>
-            <div class="profile-stats">
-                <div class="stat-item">
-                    <div class="stat-number">1.2K</div>
-                    <div class="stat-label">Followers</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">847</div>
-                    <div class="stat-label">Following</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">234</div>
-                    <div class="stat-label">Posts</div>
-                </div>
+            <img src="post-image.jpg" alt="Post content" class="post-image">
+            <div class="post-actions">
+                <button class="btn">Like</button>
+                <button class="btn">Comment</button>
+                <button class="btn">Share</button>
+                <p style="margin-top: 10px;">
+                    <a href="#" class="hashtag">#yofaces</a>
+                    <a href="#" class="hashtag">#awesome</a>
+                </p>
             </div>
-            <button class="edit-profile-btn">Edit Profile</button>
-            <button class="save-profile-btn">Save Changes</button>
-        </aside>
-
-        <!-- Rest of the HTML remains unchanged -->
+        </div>
+    </div>
 
     <script>
-        // Profile editing functionality
-        const profilePic = document.querySelector('.profile-pic');
-        const profileName = document.querySelector('.profile-name');
-        const profileLocation = document.querySelector('.profile-location');
-        const editBtn = document.querySelector('.edit-profile-btn');
-        const saveBtn = document.querySelector('.save-profile-btn');
-
-        // Load profile data from localStorage
-        function loadProfile() {
-            const profile = JSON.parse(localStorage.getItem('profile')) || {};
-            if (profile.name) profileName.textContent = profile.name;
-            if (profile.location) profileLocation.textContent = profile.location;
-            if (profile.picture) profilePic.src = profile.picture;
-        }
-
-        // Save profile data to localStorage
-        function saveProfile() {
-            const profile = {
-                name: profileName.textContent,
-                location: profileLocation.textContent,
-                picture: profilePic.src
-            };
-            localStorage.setItem('profile', JSON.stringify(profile));
-        }
-
-        // Toggle edit mode
-        editBtn.addEventListener('click', () => {
-            profileName.contentEditable = true;
-            profileLocation.contentEditable = true;
-            editBtn.style.display = 'none';
-            saveBtn.style.display = 'block';
-        });
-
-        // Handle save changes
-        saveBtn.addEventListener('click', () => {
-            profileName.contentEditable = false;
-            profileLocation.contentEditable = false;
-            saveBtn.style.display = 'none';
-            editBtn.style.display = 'block';
-            saveProfile();
-        });
-
-        // Handle profile picture change
-        profilePic.addEventListener('click', () => {
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.accept = 'image/*';
-            
-            fileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        profilePic.src = e.target.result;
-                        saveProfile();
-                    };
-                    reader.readAsDataURL(file);
-                }
+        // Basic functionality - This would need to be expanded significantly
+        document.addEventListener('DOMContentLoaded', () => {
+            // Like button functionality
+            const likeButtons = document.querySelectorAll('.btn');
+            likeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    button.style.backgroundColor = button.style.backgroundColor === 'red' ? 
+                        'var(--primary-color)' : 'red';
+                });
             });
-            
-            fileInput.click();
         });
-
-        // Load profile on page load
-        loadProfile();
-
-        // Rest of the JavaScript remains unchanged
     </script>
 </body>
 </html>
-<!-- 
-DEPLOYMENT INSTRUCTIONS:
-
-1. Create a GitHub Account:
-   - Go to github.com and sign up for a new account if you don't have one
-
-2. Create a New Repository:
-   - Click the '+' icon in the top right
-   - Select 'New repository'
-   - Name it 'yofaces'
-   - Make it public
-   - Initialize with a README
-
-3. Upload Files:
-   - Save this HTML file as 'index.html'
-   - Click 'Add file' > 'Upload files' in your repository
-   - Drag and drop the index.html file
-   - Commit the changes
-
-4. Enable GitHub Pages:
-   - Go to repository Settings
-   - Scroll to 'GitHub Pages' section
-   - Under Source, select 'main' branch
-   - Save the changes
-
-5. Access Your Site:
-   - Your site will be available at: https://[your-username].github.io/yofaces
-   - It may take a few minutes to go live
-
-Future Improvements:
-- Add user authentication
-- Implement actual photo upload functionality
-- Add a database for storing user data and photos
-- Create a backend API
-- Add comment functionality
-- Implement user following system
-
-Profile Editing Instructions:
-1. Click "Edit Profile" button to open edit mode
-2. Edit profile fields:
-   - Click profile picture to upload new image
-   - Edit name and location inline
-   - Click Save to update profile
-3. Profile data is currently stored in browser localStorage
-4. Future updates will persist data in database
-
-Note: Profile editing is implemented client-side only.
-For production, add server-side validation and storage.
--->
