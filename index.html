@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duoo</title>
+    <title>YoFace - Share Your Moments</title>
     <style>
         :root {
-            --primary: #1E90FF;
+            --primary: #FF4B4B;
             --secondary: #F8F9FA;
-            --text: #000000;
+            --text: #333333;
+            --border: #E0E0E0;
         }
         
         body {
@@ -16,473 +17,549 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             color: var(--text);
             line-height: 1.6;
+            background-color: #f0f2f5;
         }
 
         .header {
-            padding: 20px;
-            background-color: var(--secondary);
+            background-color: white;
+            padding: 1rem;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .logo {
-            max-width: 200px;
-            margin: 0 auto;
-            display: block;
-        }
-
-        .logo img {
+            position: fixed;
             width: 100%;
-            height: auto;
+            top: 0;
+            z-index: 1000;
         }
 
         .nav {
-            background-color: var(--primary);
-            padding: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
             gap: 1rem;
         }
 
-        .nav a {
-            color: white;
+        .nav-links a {
+            color: var(--text);
             text-decoration: none;
             padding: 0.5rem 1rem;
-            border-radius: 4px;
+            border-radius: 20px;
             transition: background-color 0.3s;
         }
 
-        .nav a:hover {
-            background-color: rgba(255,255,255,0.2);
+        .nav-links a:hover {
+            background-color: var(--secondary);
         }
 
         .main-content {
             max-width: 1200px;
-            margin: 2rem auto;
+            margin: 80px auto 2rem;
             padding: 0 1rem;
-        }
-
-        .contact-section {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        .contact-form {
             display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 100px;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-pic {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-location {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 1rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
         }
 
-        .contact-form input,
-        .contact-form textarea {
+        .stat-item {
+            padding: 0.5rem;
+            background: var(--secondary);
+            border-radius: 8px;
+        }
+
+        .stat-number {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .edit-profile-btn {
+            width: 100%;
             padding: 0.8rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        .contact-form button {
-            background-color: var(--primary);
+            background: var(--primary);
             color: white;
-            padding: 0.8rem;
             border: none;
-            border-radius: 4px;
+            border-radius: 20px;
             cursor: pointer;
             transition: opacity 0.3s;
         }
 
-        .contact-form button:hover {
+        .edit-profile-btn:hover {
             opacity: 0.9;
         }
 
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
+        .post-form {
+            background: white;
+            border-radius: 10px;
             padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
         }
 
-        .gallery img {
+        .post-input {
             width: 100%;
-            height: 300px;
-            object-fit: cover;
+            padding: 1rem;
+            border: 1px solid var(--border);
             border-radius: 8px;
-            cursor: pointer;
-            transition: transform 0.3s ease;
+            margin-bottom: 1rem;
+            resize: none;
         }
 
-        .gallery img:hover {
-            transform: scale(1.02);
-        }
-
-        .lightbox {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            justify-content: center;
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
         }
 
-        .lightbox.active {
+        .upload-btn {
+            padding: 0.5rem 1rem;
+            background: var(--secondary);
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
             display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .lightbox img {
-            max-width: 90%;
-            max-height: 90vh;
-            object-fit: contain;
-            border-radius: 4px;
-        }
-
-        .lightbox-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+        .post-btn {
+            padding: 0.5rem 2rem;
+            background: var(--primary);
             color: white;
-            font-size: 30px;
+            border: none;
+            border-radius: 20px;
             cursor: pointer;
-            padding: 10px;
         }
 
-        .lightbox-close:hover {
-            color: var(--primary);
+        .posts {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
         }
 
-        .lightbox-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            color: white;
-            font-size: 40px;
-            cursor: pointer;
-            padding: 20px;
-            background-color: rgba(0, 0, 0, 0.3);
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-
-        .lightbox-nav:hover {
-            background-color: rgba(0, 0, 0, 0.5);
-            color: var(--primary);
-        }
-
-        .lightbox-prev {
-            left: 20px;
-        }
-
-        .lightbox-next {
-            right: 20px;
-        }
-
-        footer {
-            background-color: var(--primary);
-            color: white;
-            text-align: center;
-            padding: 1rem;
-            margin-top: 2rem;
-        }
-
-        .login-section {
-            max-width: 400px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background-color: var(--secondary);
-            border-radius: 8px;
+        .post {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        .login-form {
-            display: grid;
+        .post-header {
+            display: flex;
+            align-items: center;
             gap: 1rem;
+            margin-bottom: 1rem;
         }
 
-        .login-form input {
-            padding: 0.8rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+        .post-author-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
-        .login-form button {
-            background-color: var(--primary);
-            color: white;
-            padding: 0.8rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: opacity 0.3s;
+        .post-author {
+            font-weight: bold;
         }
 
-        .login-form button:hover {
-            opacity: 0.9;
+        .post-time {
+            color: #666;
+            font-size: 0.9rem;
         }
 
-        .login-form p {
-            text-align: center;
-            margin-top: 1rem;
+        .post-content {
+            margin-bottom: 1rem;
         }
 
-        .login-form a {
-            color: var(--primary);
-            text-decoration: none;
+        .post-image {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 1rem;
         }
 
-        .login-form a:hover {
-            text-decoration: underline;
+        .post-actions {
+            display: flex;
+            gap: 1rem;
+            color: #666;
         }
 
-        .hamburger {
-            display: none;
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             cursor: pointer;
             padding: 0.5rem;
-            z-index: 100;
-            background-color: var(--primary);
-            border-radius: 4px;
+            border-radius: 20px;
+            transition: background-color 0.3s;
         }
 
-        .hamburger span {
-            display: block;
-            width: 25px;
-            height: 3px;
-            background-color: white;
-            margin: 5px 0;
-            transition: all 0.3s ease;
+        .action-btn:hover {
+            background-color: var(--secondary);
+        }
+
+        .trending {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 100px;
+        }
+
+        .trending-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .trending-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .trending-item:last-child {
+            border-bottom: none;
+        }
+
+        .trending-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .trending-info {
+            flex: 1;
+        }
+
+        .trending-name {
+            font-weight: bold;
+        }
+
+        .trending-stats {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-card, .trending {
+                position: static;
+            }
         }
 
         @media (max-width: 768px) {
-            .header {
-                position: relative;
-                padding: 1rem;
-            }
-
-            .logo {
-                max-width: 150px;
-            }
-
-            .hamburger {
-                display: block;
-                position: absolute;
-                right: 1rem;
-                top: 50%;
-                transform: translateY(-50%);
-                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            }
-
             .nav {
-                position: fixed;
-                top: 0;
-                right: -100%;
-                height: 100vh;
-                width: 100%;
-                background-color: rgba(30, 144, 255, 0.95);
                 flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                width: 100%;
                 justify-content: center;
-                align-items: center;
-                transition: right 0.3s ease;
-                z-index: 99;
-                padding: 0;
-            }
-
-            .nav.active {
-                right: 0;
-            }
-
-            .nav a {
-                font-size: 1.5rem;
-                margin: 1.5rem 0;
-                padding: 1rem 2rem;
-                background-color: rgba(255, 255, 255, 0.1);
-                border-radius: 8px;
-                width: 80%;
-                text-align: center;
-                transition: all 0.3s ease;
-            }
-
-            .nav a:hover {
-                background-color: rgba(255, 255, 255, 0.2);
-                transform: translateY(-2px);
-            }
-
-            .hamburger.active span:nth-child(1) {
-                transform: rotate(45deg) translate(5px, 5px);
-            }
-
-            .hamburger.active span:nth-child(2) {
-                opacity: 0;
-            }
-
-            .hamburger.active span:nth-child(3) {
-                transform: rotate(-45deg) translate(7px, -6px);
-            }
-            
-            .gallery {
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            }
-
-            .lightbox-nav {
-                font-size: 30px;
-                padding: 15px;
-            }
-
-            .lightbox-prev {
-                left: 10px;
-            }
-
-            .lightbox-next {
-                right: 10px;
             }
         }
     </style>
 </head>
 <body>
     <header class="header">
-        <div class="logo">
-            <img src="https://ichef.bbci.co.uk/ace/standard/976/cpsprodpb/E802/production/_89649395_instagram_logo_976.jpg.webp" alt="Instagram Logo">
-        </div>
-        <div class="hamburger">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
+        <nav class="nav">
+            <a href="#" class="logo">YoFace</a>
+            <div class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#profile">Profile</a>
+                <a href="#messages">Messages</a>
+                <a href="#notifications">Notifications</a>
+            </div>
+        </nav>
     </header>
 
-    <nav class="nav">
-        <a href="#home">Home</a>
-        <a href="#gallery">Gallery</a>
-        <a href="#contact">Contact</a>
-        <a href="#login">Login</a>
-    </nav>
-
     <main class="main-content">
-        <section id="home">
-            <h1>Welcome to Duoo</h1>
-            <p>Your modern solution for digital needs.</p>
+        <aside class="profile-card">
+            <div class="profile-header">
+                <img src="https://picsum.photos/150" alt="Profile Picture" class="profile-pic">
+                <h2 class="profile-name">John Doe</h2>
+                <p class="profile-location">New York, USA</p>
+            </div>
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <div class="stat-number">1.2K</div>
+                    <div class="stat-label">Followers</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">847</div>
+                    <div class="stat-label">Following</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">234</div>
+                    <div class="stat-label">Posts</div>
+                </div>
+            </div>
+            <button class="edit-profile-btn">Edit Profile</button>
+        </aside>
+
+        <section class="feed">
+            <div class="post-form">
+                <textarea class="post-input" placeholder="What's on your mind?"></textarea>
+                <div class="post-actions">
+                    <button class="upload-btn">
+                        <span>📷</span> Add Photo
+                    </button>
+                    <button class="post-btn">Post</button>
+                </div>
+            </div>
+
+            <div class="posts">
+                <article class="post">
+                    <div class="post-header">
+                        <img src="https://picsum.photos/40" alt="Author" class="post-author-pic">
+                        <div>
+                            <div class="post-author">Sarah Smith</div>
+                            <div class="post-time">2 hours ago</div>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <p>Beautiful day at the beach! 🌊</p>
+                        <img src="https://picsum.photos/600/400" alt="Post Image" class="post-image">
+                    </div>
+                    <div class="post-actions">
+                        <div class="action-btn">
+                            <span>❤️</span> Like
+                        </div>
+                        <div class="action-btn">
+                            <span>💬</span> Comment
+                        </div>
+                        <div class="action-btn">
+                            <span>🔄</span> Share
+                        </div>
+                    </div>
+                </article>
+
+                <article class="post">
+                    <div class="post-header">
+                        <img src="https://picsum.photos/41" alt="Author" class="post-author-pic">
+                        <div>
+                            <div class="post-author">Mike Johnson</div>
+                            <div class="post-time">5 hours ago</div>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <p>Just finished my new project! 🎉</p>
+                        <img src="https://picsum.photos/600/401" alt="Post Image" class="post-image">
+                    </div>
+                    <div class="post-actions">
+                        <div class="action-btn">
+                            <span>❤️</span> Like
+                        </div>
+                        <div class="action-btn">
+                            <span>💬</span> Comment
+                        </div>
+                        <div class="action-btn">
+                            <span>🔄</span> Share
+                        </div>
+                    </div>
+                </article>
+            </div>
         </section>
 
-        <section id="gallery" class="gallery">
-            <img src="https://picsum.photos/800/600?random=1" alt="Gallery Image 1">
-            <img src="https://picsum.photos/800/600?random=2" alt="Gallery Image 2">
-            <img src="https://picsum.photos/800/600?random=3" alt="Gallery Image 3">
-            <img src="https://picsum.photos/800/600?random=4" alt="Gallery Image 4">
-            <img src="https://picsum.photos/800/600?random=5" alt="Gallery Image 5">
-            <img src="https://picsum.photos/800/600?random=6" alt="Gallery Image 6">
-        </section>
-
-        <section id="contact" class="contact-section">
-            <h2>Contact Us</h2>
-            <form class="contact-form">
-                <input type="text" placeholder="Your Name" required>
-                <input type="email" placeholder="Your Email" required>
-                <textarea placeholder="Your Message" rows="5" required></textarea>
-                <button type="submit">Send Message</button>
-            </form>
-            <p>Email us at: <a href="mailto:info@duoo.co.uk">info@duoo.co.uk</a></p>
-        </section>
-
-        <section id="login" class="login-section">
-            <h2>Member Login</h2>
-            <form class="login-form">
-                <input type="email" placeholder="Email Address" required>
-                <input type="password" placeholder="Password" required>
-                <button type="submit">Login</button>
-                <p>Don't have an account? <a href="#register">Register here</a></p>
-                <p><a href="#forgot-password">Forgot your password?</a></p>
-            </form>
-        </section>
+        <aside class="trending">
+            <h3 class="trending-title">Trending Now</h3>
+            <div class="trending-item">
+                <img src="https://picsum.photos/42" alt="Trending User" class="trending-pic">
+                <div class="trending-info">
+                    <div class="trending-name">#SummerVibes</div>
+                    <div class="trending-stats">2.3K posts</div>
+                </div>
+            </div>
+            <div class="trending-item">
+                <img src="https://picsum.photos/43" alt="Trending User" class="trending-pic">
+                <div class="trending-info">
+                    <div class="trending-name">#FoodieLife</div>
+                    <div class="trending-stats">1.8K posts</div>
+                </div>
+            </div>
+            <div class="trending-item">
+                <img src="https://picsum.photos/44" alt="Trending User" class="trending-pic">
+                <div class="trending-info">
+                    <div class="trending-name">#TravelGoals</div>
+                    <div class="trending-stats">1.5K posts</div>
+                </div>
+            </div>
+        </aside>
     </main>
 
-    <footer>
-        <p>&copy; 2024 Duoo. All rights reserved.</p>
-    </footer>
-
-    <div class="lightbox">
-        <span class="lightbox-close">&times;</span>
-        <span class="lightbox-nav lightbox-prev">&#10094;</span>
-        <span class="lightbox-nav lightbox-next">&#10095;</span>
-        <img src="" alt="Zoomed Image">
-    </div>
-
     <script>
-        const hamburger = document.querySelector('.hamburger');
-        const nav = document.querySelector('.nav');
-        const lightbox = document.querySelector('.lightbox');
-        const lightboxImg = lightbox.querySelector('img');
-        const lightboxClose = document.querySelector('.lightbox-close');
-        const lightboxPrev = document.querySelector('.lightbox-prev');
-        const lightboxNext = document.querySelector('.lightbox-next');
-        const galleryImages = document.querySelectorAll('.gallery img');
-        let currentImageIndex = 0;
+        // Handle post creation
+        const postForm = document.querySelector('.post-form');
+        const postInput = document.querySelector('.post-input');
+        const postBtn = document.querySelector('.post-btn');
+        const uploadBtn = document.querySelector('.upload-btn');
+        const postsContainer = document.querySelector('.posts');
 
-        // Hamburger menu functionality
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            nav.classList.toggle('active');
-        });
-
-        // Close menu when clicking a link
-        document.querySelectorAll('.nav a').forEach(link => {
-            link.addEventListener('click', () => {
-                hamburger.classList.remove('active');
-                nav.classList.remove('active');
-            });
-        });
-
-        // Lightbox functionality
-        galleryImages.forEach((image, index) => {
-            image.addEventListener('click', () => {
-                currentImageIndex = index;
-                lightboxImg.src = image.src;
-                lightbox.classList.add('active');
-            });
-        });
-
-        // Navigation functions
-        function showImage(index) {
-            if (index >= 0 && index < galleryImages.length) {
-                currentImageIndex = index;
-                lightboxImg.src = galleryImages[currentImageIndex].src;
+        postBtn.addEventListener('click', () => {
+            const content = postInput.value.trim();
+            if (content) {
+                createPost(content);
+                postInput.value = '';
             }
-        }
+        });
 
-        function nextImage() {
-            showImage(currentImageIndex + 1);
-        }
-
-        function prevImage() {
-            showImage(currentImageIndex - 1);
-        }
-
-        // Navigation event listeners
-        lightboxNext.addEventListener('click', nextImage);
-        lightboxPrev.addEventListener('click', prevImage);
-
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            if (lightbox.classList.contains('active')) {
-                if (e.key === 'ArrowRight') {
-                    nextImage();
-                } else if (e.key === 'ArrowLeft') {
-                    prevImage();
-                } else if (e.key === 'Escape') {
-                    lightbox.classList.remove('active');
+        uploadBtn.addEventListener('click', () => {
+            // Create a file input element
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        createPost('', e.target.result);
+                    };
+                    reader.readAsDataURL(file);
                 }
-            }
+            });
+            
+            fileInput.click();
         });
 
-        // Close lightbox when clicking the close button
-        lightboxClose.addEventListener('click', () => {
-            lightbox.classList.remove('active');
-        });
+        function createPost(content, imageUrl = null) {
+            const post = document.createElement('article');
+            post.className = 'post';
+            
+            const currentTime = new Date().toLocaleTimeString();
+            
+            post.innerHTML = `
+                <div class="post-header">
+                    <img src="https://picsum.photos/150" alt="Author" class="post-author-pic">
+                    <div>
+                        <div class="post-author">John Doe</div>
+                        <div class="post-time">Just now</div>
+                    </div>
+                </div>
+                <div class="post-content">
+                    ${content ? `<p>${content}</p>` : ''}
+                    ${imageUrl ? `<img src="${imageUrl}" alt="Post Image" class="post-image">` : ''}
+                </div>
+                <div class="post-actions">
+                    <div class="action-btn">
+                        <span>❤️</span> Like
+                    </div>
+                    <div class="action-btn">
+                        <span>💬</span> Comment
+                    </div>
+                    <div class="action-btn">
+                        <span>🔄</span> Share
+                    </div>
+                </div>
+            `;
+            
+            postsContainer.insertBefore(post, postsContainer.firstChild);
+        }
 
-        // Close lightbox when clicking outside the image
-        lightbox.addEventListener('click', (e) => {
-            if (e.target === lightbox) {
-                lightbox.classList.remove('active');
+        // Handle likes
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.action-btn')) {
+                const btn = e.target.closest('.action-btn');
+                if (btn.textContent.includes('Like')) {
+                    btn.innerHTML = '<span>❤️</span> Liked';
+                }
             }
         });
     </script>
 </body>
 </html>
+<!-- 
+DEPLOYMENT INSTRUCTIONS:
+
+1. Create a GitHub Account:
+   - Go to github.com and sign up for a new account if you don't have one
+
+2. Create a New Repository:
+   - Click the '+' icon in the top right
+   - Select 'New repository'
+   - Name it 'yofaces'
+   - Make it public
+   - Initialize with a README
+
+3. Upload Files:
+   - Save this HTML file as 'index.html'
+   - Click 'Add file' > 'Upload files' in your repository
+   - Drag and drop the index.html file
+   - Commit the changes
+
+4. Enable GitHub Pages:
+   - Go to repository Settings
+   - Scroll to 'GitHub Pages' section
+   - Under Source, select 'main' branch
+   - Save the changes
+
+5. Access Your Site:
+   - Your site will be available at: https://[your-username].github.io/yofaces
+   - It may take a few minutes to go live
+
+Future Improvements:
+- Add user authentication
+- Implement actual photo upload functionality
+- Add a database for storing user data and photos
+- Create a backend API
+- Add comment functionality
+- Implement user following system
+-->
